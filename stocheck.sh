@@ -11,19 +11,22 @@ while [ ! -n "$1" ]; do
 if [[ -n $(ls /sys/block | grep sd) ]];then
     echo "===  sata drive check: ==="
     for x in {a..z};do
-      if [[ -n $(smartctl --scan | grep /dev/sd$x) ]];then
+      scan=$(smartctl --scan)
+      if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
         echo "------------------- /dev/sd$x --------------------";
         smartctl -H -i /dev/sd$x;
-        echo "-----------------------------------------------------";
+        echo "-------------------------------------------------";
       fi
     done
 if [[ -n $(ls /dev | grep nvme) ]];then
     echo "===  nvme drive check: ==="
     for x in {0..4};do
+      scan=$(smartctl --scan)
+      if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
 	    echo "------------------- /dev/nvme$x --------------------";
 	    smartctl -H -i /dev/nvme$x;
-	    echo "---------------------------------------------------------";
-    exit
+	    echo "---------------------------------------------------";
+      fi
     done
 else
     exit
@@ -44,5 +47,11 @@ while [ ! -z "$1" ]; do
          echo "#############################################"
          exit
         fi
+      elif [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]];then
+         echo "Usage: $0 (options) <ip> (y/n)"
+         echo "Options:"
+         echo " -u/--update -- update the script"
+         echo " -h/--help -- show help"
+         exit
       fi
 done
