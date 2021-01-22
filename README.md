@@ -11,6 +11,11 @@ Options: <br>
  -h/--help -- show help <br>
  -u/--update -- update the script <br>
 
+**running it on a remote machine:**
+```bash
+ssh root@remote 'bash -s' < stocheck.sh
+```
+
 # installation
 1. download the script: <br>
 ```bash
