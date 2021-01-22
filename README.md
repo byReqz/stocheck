@@ -22,12 +22,14 @@ ssh root@remote 'bash -s' < stocheck.sh
 wget https://git.byreqz.de/byreqz/stocheck/raw/branch/main/stocheck.sh
 ```
 2. run it with <br>
-``
+```bash
 bash stocheck.sh
-``
+```
 or <br>
-``
+```bash
 chmod +x stockheck.sh && ./stocheck.sh
-``
+```
 3. optionally alias it <br>
-``alias stocheck="~/stocheck.sh"``
+```bash
+alias stocheck="~/stocheck.sh"
+```
