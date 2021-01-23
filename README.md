@@ -11,9 +11,16 @@ Options: <br>
  -h/--help -- show help <br>
  -u/--update -- update the script <br>
 
-**running it on a remote machine:**
+### **running it on a remote machine:**
+**running once:**
 ```bash
 ssh root@remote 'bash -s' < stocheck.sh
+```
+
+**proper alias:**
+```bash
+echo "function stocheck_remote { ssh root@"$"1 'bash -s' < ~/stocheck.sh; }" >> ~/.bashrc
+echo "alias stocheck=stocheck_remote" >> ~/.bashrc
 ```
 
 # installation
