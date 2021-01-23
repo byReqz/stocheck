@@ -20,6 +20,7 @@ while [ ! -n "$1" ]; do
             echo "-------------------------------------------------"
           fi
         done
+    fi
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ==="
         for x in {0..4};do
@@ -30,10 +31,11 @@ while [ ! -n "$1" ]; do
           echo "---------------------------------------------------"
           fi
         done
-    else
+    fi
+    if [[ -n $(ls /dev | grep nvme) ]] || if [[ -n $(ls /sys/block | grep sd) ]];then
         exit
     fi
-    fi
+  fi
   if [[ "$raidcheck" =~ "3ware" ]];then
     echo "3ware raid-controller detected"
     dreiware=$(tw_cli show | grep c | cut -c -3)
@@ -83,6 +85,7 @@ while [ ! -n "$1" ]; do
     fi
 #adding further controllers here
   fi
+done
 while [ ! -z "$1" ]; do
       if [[ $1 == "-u" ]] || [[ "$1" == "--update" ]];then
         if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh | md5sum | cut -c -32) != $(md5sum $0 | cut -c -32) ]];then
@@ -104,6 +107,4 @@ while [ ! -z "$1" ]; do
          echo " -h/--help -- show help"
          exit
       fi
-done
-fi
 done
