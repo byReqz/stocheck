@@ -8,31 +8,81 @@ if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.
   echo ""
 fi
 while [ ! -n "$1" ]; do
-if [[ -n $(ls /sys/block | grep sd) ]];then
-    echo "===  sata drive check: ==="
-    for x in {a..z};do
-      scan=$(smartctl --scan)
-      if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
-        echo "------------------- /dev/sd$x --------------------";
-        smartctl -H -i /dev/sd$x;
-        echo "-------------------------------------------------";
-      fi
-    done
-if [[ -n $(ls /dev | grep nvme) ]];then
-    echo "===  nvme drive check: ==="
-    for x in {0..4};do
-      scan=$(smartctl --scan)
-      if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
-	    echo "------------------- /dev/nvme$x --------------------";
-	    smartctl -H -i /dev/nvme$x;
-	    echo "---------------------------------------------------";
-      fi
-    done
-else
-    exit
-fi
-fi
-done
+  raidcheck="$(lspci | grep RAID)"
+  if [[ -z "$raidcheck" ]];then
+    if [[ -n $(ls /sys/block | grep sd) ]];then
+        echo "===  sata drive check: ==="
+        for x in {a..z};do
+          scan=$(smartctl --scan)
+          if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
+            echo "------------------- /dev/sd$x --------------------"
+            smartctl -H -i /dev/sd$x;
+            echo "-------------------------------------------------"
+          fi
+        done
+    if [[ -n $(ls /dev | grep nvme) ]];then
+        echo "===  nvme drive check: ==="
+        for x in {0..4};do
+          scan=$(smartctl --scan)
+          if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
+          echo "------------------- /dev/nvme$x --------------------"
+          smartctl -H -i /dev/nvme$x;
+          echo "---------------------------------------------------"
+          fi
+        done
+    else
+        exit
+    fi
+    fi
+  if [[ "$raidcheck" =~ "3ware" ]];then
+    echo "3ware raid-controller detected"
+    dreiware=$(tw_cli show | grep c | cut -c -3)
+    echo "------------------- 3ware controller: $dreiware --------------------"
+    tw_cli /$dreiware show
+    echo "---------------------------------------------------------------"
+    dreiwareversion=$(ls /dev/ | grep t)
+    if [[ -n $(echo $dreiwareversion | grep twe0) ]];then
+      echo "6000/7000/8000 series controller detected"
+      echo "---------------------------------------------------------------"
+        dreiwaredrives=$(tw_cli /$dreiware show | grep p | cut -c -3)
+        echo "===  sata drive check: ==="
+        for x in {0..20};do
+          if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
+            echo "------------------- p$x --------------------"
+            smartctl -a -d 3ware,p$x /dev/twe0
+            echo "-------------------------------------------"
+          fi
+        done
+    elif [[ -n $(echo $dreiwareversion | grep twa0) ]];then
+      echo "9000 series controller detected"
+      echo "---------------------------------------------------------------"
+        dreiwaredrives=$(tw_cli /$dreiware show | grep p | cut -c -3)
+        echo "===  sata drive check: ==="
+        for x in {0..20};do
+          if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
+            echo "------------------- p$x --------------------"
+            smartctl -a -d 3ware,p$x /dev/twa0
+            echo "-------------------------------------------"
+          fi
+        done
+    elif [[ -n $(echo $dreiwareversion | grep twl0) ]];then
+      echo "9750 series controller detected"
+      echo "---------------------------------------------------------------"
+        dreiwaredrives=$(tw_cli /$dreiware show | grep p | cut -c -3)
+        echo "===  sata drive check: ==="
+        for x in {0..20};do
+          if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
+            echo "------------------- p$x --------------------"
+            smartctl -a -d 3ware,p$x /dev/twl0
+            echo "-------------------------------------------"
+          fi
+        done
+    else
+      echo "reading smart values for this controller series is not supported"
+      exit
+    fi
+#adding further controllers here
+  fi
 while [ ! -z "$1" ]; do
       if [[ $1 == "-u" ]] || [[ "$1" == "--update" ]];then
         if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh | md5sum | cut -c -32) != $(md5sum $0 | cut -c -32) ]];then
@@ -54,4 +104,6 @@ while [ ! -z "$1" ]; do
          echo " -h/--help -- show help"
          exit
       fi
+done
+fi
 done
