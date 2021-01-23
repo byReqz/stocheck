@@ -4,6 +4,7 @@ quick and dirty smart value checker
 ### features: 
 - sata/nvme support
 - show smart info and self-check results
+- supports most common raid-controller brands
 
 # usage
 Usage: stocheck (options) <br>
