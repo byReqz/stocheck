@@ -153,13 +153,13 @@ while [ -n "$1" ]; do
          exit
         fi
       elif [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]];then
-         echo "Usage: $0 (options) <ip> (y/n)"
+         echo "Usage: $0 (options)"
          echo "Options:"
          echo " -u/--update -- update the script"
          echo " -h/--help -- show help"
          exit
       else
-         echo "Usage: $0 (options) <ip> (y/n)"
+         echo "Usage: $0 (options)"
          echo "Options:"
          echo " -u/--update -- update the script"
          echo " -h/--help -- show help"
