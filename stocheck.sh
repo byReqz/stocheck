@@ -18,6 +18,8 @@ while [ ! -n "$1" ]; do
             echo "------------------- /dev/sd$x --------------------"
             smartctl -H -i /dev/sd$x;
             echo "-------------------------------------------------"
+          else
+            exit
           fi
         done
         if [[ -z $(ls /dev | grep nvme) ]];then
