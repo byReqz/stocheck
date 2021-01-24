@@ -8,7 +8,7 @@ if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.
   echo ""
 fi
 while [ -z "$1" ]; do
-  raidcheck="$(lspci | grep -E 'lsi|3ware|adaptec|smartraid')"
+  raidcheck="$(lspci | grep -E 'LSI|3Ware|Adaptec|Smartraid')"
   if [[ -z "$raidcheck" ]];then
     if [[ -n $(ls /sys/block | grep sd) ]];then
         echo "===  sata drive check: ==="
