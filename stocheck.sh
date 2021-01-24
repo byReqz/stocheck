@@ -20,6 +20,9 @@ while [ ! -n "$1" ]; do
             echo "-------------------------------------------------"
           fi
         done
+        if [[ -z $(ls /dev | grep nvme) ]];then
+          exit
+        fi
     fi
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ==="
@@ -31,12 +34,15 @@ while [ ! -n "$1" ]; do
           echo "---------------------------------------------------"
           fi
         done
+        if [[ -z $(ls /dev | grep sd) ]];then
+          exit
+        fi
     fi
-    if [[ -n $(ls /dev | grep nvme) ]] || if [[ -n $(ls /sys/block | grep sd) ]];then
+    if [[ -n $(ls /dev | grep nvme) ]] || [[ -n $(ls /sys/block | grep sd) ]] || [[ ! "$raidcheck" =~ "3ware" ]] && [[ "$raidcheck" =~ "adaptec" ]] && [[ "$raidcheck" =~ "lsi" ]] && [[ -n $(ls /sys/block | grep sd) ]] && [[ -n $(ls /dev | grep nvme) ]];then
+        echo "no drives detected"
         exit
     fi
-  fi
-  if [[ "$raidcheck" =~ "3ware" ]];then
+  elif [[ "$raidcheck" =~ "3ware" ]];then
     echo "3ware raid-controller detected"
     dreiware=$(tw_cli show | grep c | cut -c -3)
     echo "------------------- 3ware controller: $dreiware --------------------"
@@ -53,6 +59,8 @@ while [ ! -n "$1" ]; do
             echo "------------------- p$x --------------------"
             smartctl -a -d 3ware,p$x /dev/twe0
             echo "-------------------------------------------"
+          else
+            exit
           fi
         done
     elif [[ -n $(echo $dreiwareversion | grep twa0) ]];then
@@ -65,6 +73,8 @@ while [ ! -n "$1" ]; do
             echo "------------------- p$x --------------------"
             smartctl -a -d 3ware,p$x /dev/twa0
             echo "-------------------------------------------"
+          else
+            exit
           fi
         done
     elif [[ -n $(echo $dreiwareversion | grep twl0) ]];then
@@ -77,15 +87,56 @@ while [ ! -n "$1" ]; do
             echo "------------------- p$x --------------------"
             smartctl -a -d 3ware,p$x /dev/twl0
             echo "-------------------------------------------"
+          else
+            exit
           fi
         done
     else
       echo "reading smart values for this controller series is not supported"
       exit
     fi
-#adding further controllers here
+  elif [[ "$raidcheck" =~ "adaptec" ]];then
+    echo "adaptec raid-controller detected"
+    echo "------------------- adaptec controller --------------------"
+    arcconf GETCONFIG 1 LD
+    echo "---------------------------------------------------------------"
+    echo "===  sata drive check: ==="
+    echo "-------------------....--------------------"
+    arcconf getconfig 1 pd|egrep "Device #|State\>|Reported Location|Reported Channel|S.M.A.R.T. warnings"
+    echo "-------------------------------------------"
+      for x in {1..20};do
+        if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
+          echo "------------------- sg$x --------------------"
+          smartctl -d sat -a /dev/sg$x
+          echo "-------------------------------------------"
+        else
+            exit
+        fi
+      done
+  elif [[ "$raidcheck" =~ "lsi" ]];then
+    echo "lsi raid-controller detected"
+    echo "------------------- adaptec controller --------------------"
+    megacli -LDInfo -Lall -Aall
+    echo "---------------------------------------------------------------"
+    echo "===  sata drive check: ==="
+    echo "-------------------....--------------------"
+    megacli -PDList -aAll | egrep "Enclosure Device ID:|Slot Number:|Inquiry Data:|Error Count:|state"
+    echo "-------------------------------------------"
+      for x in {a..z};do
+          scan=$(smartctl --scan)
+          if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
+          echo "------------------- /dev/sd$x --------------------"
+          smartctl -d sat+megaraid,4 -a /dev/sd$x
+          echo "-------------------------------------------------"
+          else
+            exit
+          fi
+      done
+  else
+    exit
   fi
 done
+exit
 while [ ! -z "$1" ]; do
       if [[ $1 == "-u" ]] || [[ "$1" == "--update" ]];then
         if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh | md5sum | cut -c -32) != $(md5sum $0 | cut -c -32) ]];then
