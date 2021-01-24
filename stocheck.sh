@@ -44,7 +44,7 @@ while [ -z "$1" ]; do
         echo "no drives detected"
         exit
     fi
-  elif [[ "$raidcheck" =~ "3ware" ]];then
+  elif [[ -n $(echo "$raidcheck" | grep -e "3Ware") ]];then
     echo "3ware raid-controller detected"
     dreiware=$(tw_cli show | grep c | cut -c -3)
     echo "------------------- 3ware controller: $dreiware --------------------"
@@ -97,7 +97,7 @@ while [ -z "$1" ]; do
       echo "reading smart values for this controller series is not supported"
       exit
     fi
-  elif [[ "$raidcheck" =~ "adaptec" ]];then
+  elif [[ -n $(echo "$raidcheck" | grep -e "Adaptec") ]];then
     echo "adaptec raid-controller detected"
     echo "------------------- adaptec controller --------------------"
     arcconf GETCONFIG 1 LD
@@ -115,7 +115,7 @@ while [ -z "$1" ]; do
             exit
         fi
       done
-  elif [[ "$raidcheck" =~ "lsi" ]];then
+  elif [[ -n $(echo "$raidcheck" | grep -e "LSI") ]];then
     echo "lsi raid-controller detected"
     echo "------------------- adaptec controller --------------------"
     megacli -LDInfo -Lall -Aall
