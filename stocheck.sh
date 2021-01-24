@@ -7,8 +7,8 @@ if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.
   echo "#############################################"
   echo ""
 fi
-while [ ! -n "$1" ]; do
-  raidcheck="$(lspci)"
+while [ -z "$1" ]; do
+  raidcheck="$(lspci | grep -E 'lsi|3ware|adaptec|smartraid')"
   if [[ -z "$raidcheck" ]];then
     if [[ -n $(ls /sys/block | grep sd) ]];then
         echo "===  sata drive check: ==="
@@ -138,8 +138,7 @@ while [ ! -n "$1" ]; do
     exit
   fi
 done
-exit
-while [ ! -z "$1" ]; do
+while [ -n "$1" ]; do
       if [[ $1 == "-u" ]] || [[ "$1" == "--update" ]];then
         if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh | md5sum | cut -c -32) != $(md5sum $0 | cut -c -32) ]];then
           wget -O $0 --quiet "https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh"
@@ -154,6 +153,12 @@ while [ ! -z "$1" ]; do
          exit
         fi
       elif [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]];then
+         echo "Usage: $0 (options) <ip> (y/n)"
+         echo "Options:"
+         echo " -u/--update -- update the script"
+         echo " -h/--help -- show help"
+         exit
+      else
          echo "Usage: $0 (options) <ip> (y/n)"
          echo "Options:"
          echo " -u/--update -- update the script"
