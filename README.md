@@ -8,7 +8,7 @@ quick and dirty smart value checker
 supports most common raid-controller brands: <br>
 - 3ware (series 6000, 7000, 8000, 9000 and 9750)
 - adaptec (smartraid/aacraid not yet implemented)
-- lsi
+- lsi/dell
 
 # usage
 Usage: stocheck (options) <br>
