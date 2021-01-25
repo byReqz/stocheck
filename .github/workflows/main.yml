@@ -8,7 +8,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: get hash of script
-        run: $(md5sum stocheck.sh | cut -c -32) > hash
+        run: echo $(md5sum stocheck.sh | cut -c -32) > hash
         
       - name: Commit hash
         uses: EndBug/add-and-commit@v7
