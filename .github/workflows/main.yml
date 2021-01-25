@@ -4,9 +4,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 jobs:
-  gethash:
+  getscript:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: get hash of script
-        run: echo $(cat stocheck.sh | md5sum | cut -c -32) > hash
+      - name: get script
+
+- name: gethash
+  uses: DamianReeves/write-file-action@v1.0
+  with:
+    path: /home/runner/work/stocheck/stocheck/hash
+    contents: stocheck.sh | md5sum | cut -c -32
+    write-mode: overwrite
