@@ -5,7 +5,7 @@ quick and dirty smart value checker
 - sata/nvme support
 - show smart info and self-check results
 <br>
-supports most common raid-controller brands: <br>
+supports most common raid-controller brands (but not all models): <br>
 - 3ware (series 6000, 7000, 8000, 9000 and 9750) <br>
 - adaptec (smartraid/aacraid not yet implemented) <br>
 - lsi/dell <br>
