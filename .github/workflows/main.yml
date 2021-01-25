@@ -1,5 +1,9 @@
 name: gethash
-on: [push]
+on:
+  push:
+    paths:
+      - '.github/workflows/main.yml'
+      - 'stocheck.sh'
 jobs:
   gethash:
     runs-on: ubuntu-latest
