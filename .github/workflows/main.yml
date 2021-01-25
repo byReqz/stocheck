@@ -1,18 +1,20 @@
 name: gethash
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+on: [push]
 jobs:
-  getscript:
+  gethash:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: get script
-
-- name: gethash
-  uses: DamianReeves/write-file-action@v1.0
-  with:
-    path: /home/runner/work/stocheck/stocheck/hash
-    contents: stocheck.sh | md5sum | cut -c -32
-    write-mode: overwrite
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        
+      - name: get hash of script
+        run: $(md5sum stocheck.sh | cut -c -32) > hash
+        
+      - name: Commit hash
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: actions
+          author_email: nils@byreqz.de
+          message: 'updated hash after commit'
+          add: 'hash'
+    
