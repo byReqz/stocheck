@@ -1,11 +1,12 @@
 #!/bin/bash
 # license: gpl-3
-
-if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ -z $1 ]] || [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ $1 != "--update" ]] || [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ $1 != "-u" ]];then
-  echo "#############################################"
-  echo -e "\e[4mnote: newer version detected, use -u to update\e[0m"
-  echo "#############################################"
-  echo ""
+if [[ ! "$0" =~ "bash" ]];then
+  if [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ -z $1 ]] || [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ $1 != "--update" ]] || [[ $(curl -s https://raw.githubusercontent.com/byReqz/stocheck/main/hash) != $(md5sum $0 | cut -c -32) ]] && [[ $1 != "-u" ]];then
+    echo "#############################################"
+    echo -e "\e[4mnote: newer version detected, use -u to update\e[0m"
+    echo "#############################################"
+    echo ""
+  fi
 fi
 while [ -z "$1" ]; do
   raidcheck="$(lspci | grep -E 'LSI|3Ware|Adaptec|Smartraid')"
