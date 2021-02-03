@@ -70,7 +70,12 @@ while [ -z "$1" ]; do
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             echo "------------------- p$x --------------------"
-            smartctl -a -d 3ware,p$x /dev/twe0
+            smartctl -i -d 3ware,p$x /dev/twe0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+            echo ""
+            echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
+            smartctl -H -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:"
+            echo ""
+            smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
             echo "-------------------------------------------"
           else
             exit
@@ -84,7 +89,12 @@ while [ -z "$1" ]; do
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             echo "------------------- p$x --------------------"
-            smartctl -a -d 3ware,p$x /dev/twa0
+            smartctl -i -d 3ware,p$x /dev/twa0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+            echo ""
+            echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
+            smartctl -H -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:"
+            echo ""
+            smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
             echo "-------------------------------------------"
           else
             exit
@@ -98,7 +108,12 @@ while [ -z "$1" ]; do
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             echo "------------------- p$x --------------------"
-            smartctl -a -d 3ware,p$x /dev/twl0
+            smartctl -i -d 3ware,p$x /dev/twl0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+            echo ""
+            echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
+            smartctl -H -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:"
+            echo ""
+            smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
             echo "-------------------------------------------"
           else
             exit
@@ -114,13 +129,18 @@ while [ -z "$1" ]; do
     arcconf GETCONFIG 1 LD
     echo "---------------------------------------------------------------"
     echo "===  sata drive check: ==="
-    echo "-------------------....--------------------"
+    echo "-------------------------------------------"
     arcconf getconfig 1 pd|egrep "Device #|State\>|Reported Location|Reported Channel|S.M.A.R.T. warnings"
     echo "-------------------------------------------"
       for x in {1..20};do
         if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
           echo "------------------- sg$x --------------------"
-          smartctl -d sat -a /dev/sg$x
+          smartctl -i -d sat /dev/sg$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+          echo ""
+          echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
+          smartctl -H -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:"
+          echo ""
+          smartctl -A -d sat /dev/sg$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
           echo "-------------------------------------------"
         else
             exit
@@ -128,18 +148,23 @@ while [ -z "$1" ]; do
       done
   elif [[ -n $(echo "$raidcheck" | grep -e "LSI") ]];then
     echo "lsi raid-controller detected"
-    echo "------------------- adaptec controller --------------------"
+    echo "------------------- LSI controller --------------------"
     megacli -LDInfo -Lall -Aall
     echo "---------------------------------------------------------------"
     echo "===  sata drive check: ==="
-    echo "-------------------....--------------------"
+    echo "-------------------------------------------"
     megacli -PDList -aAll | egrep "Enclosure Device ID:|Slot Number:|Inquiry Data:|Error Count:|state"
     echo "-------------------------------------------"
       for x in {a..z};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
           echo "------------------- /dev/sd$x --------------------"
-          smartctl -d sat+megaraid,4 -a /dev/sd$x
+          smartctl -i -d sat+megaraid,4 /dev/sd$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+          echo ""
+          echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
+          smartctl -H -d sat+megaraid,4 /dev/sd$x | grep -e "SMART overall-health self-assessment test result:"
+          echo ""
+          smartctl -A -d sat+megaraid,4 /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
           echo "-------------------------------------------------"
           else
             exit
