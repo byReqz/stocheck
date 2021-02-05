@@ -22,7 +22,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/sd$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            smartctl -A /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "FAILING_NOW"
+            smartctl -A /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Current_Pending_Sector:" -e "Offline_Uncorrectable:" -e "Raw_Read_Error_Rate:" -e "Seek_Error_Rate:" -e "Spin_Retry_Count:" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "FAILING_NOW"
             echo "-------------------------------------------------"
           else
             exit
