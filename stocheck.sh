@@ -22,7 +22,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/sd$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            smartctl -A /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
+            smartctl -A /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "FAILING_NOW"
             echo "-------------------------------------------------"
           else
             exit
@@ -38,12 +38,12 @@ while [ -z "$1" ]; do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
           echo "------------------- /dev/nvme$x --------------------"
-            smartctl -i /dev/nvme$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+            smartctl -i /dev/nvme$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Model Number:" -e "Total NVM Capacity:" -e "Namespace 1 Utilization"
             echo ""
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/nvme$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
+            smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW"
           echo "---------------------------------------------------"
           fi
         done
