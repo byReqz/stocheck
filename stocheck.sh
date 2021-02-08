@@ -155,16 +155,16 @@ while [ -z "$1" ]; do
     echo "-------------------------------------------"
     megacli -PDList -aAll | egrep "Enclosure Device ID:|Slot Number:|Inquiry Data:|Error Count:|state"
     echo "-------------------------------------------"
-      for x in {a..z};do
-          scan=$(smartctl --scan)
-          if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
-          echo "------------------- /dev/sd$x --------------------"
-          smartctl -i -d sat+megaraid,4 /dev/sd$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
+      for x in {0..32};do
+          scan=$(megacli -pdlist -a0 | grep "Device Id")
+          if [[ -n $(echo $scan | grep $x) ]];then
+          echo "------------------- p$x --------------------"
+          smartctl -i -d sat+megaraid,$x /dev/sda | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
           echo ""
           echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
-          smartctl -H -d sat+megaraid,4 /dev/sd$x | grep -e "SMART overall-health self-assessment test result:"
+          smartctl -H -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:"
           echo ""
-          smartctl -A -d sat+megaraid,4 /dev/sd$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
+          smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect"
           echo "-------------------------------------------------"
           else
             exit
