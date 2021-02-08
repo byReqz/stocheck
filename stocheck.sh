@@ -155,9 +155,11 @@ while [ -z "$1" ]; do
     echo "-------------------------------------------"
     megacli -PDList -aAll | egrep "Enclosure Device ID:|Slot Number:|Inquiry Data:|Error Count:|state"
     echo "-------------------------------------------"
-      for x in {0..32};do
-          scan=$(megacli -pdlist -a0 | grep "Device Id")
-          if [[ -n $(echo $scan | grep $x) ]];then
+    scan=$(megacli -pdlist -a0 | grep "Device Id")
+    p1=$(head -n 1 $scan | cut -c 12-)
+    pz=$(tail -n 1 $scan | cut -c 12-)
+      for x in {$p1..$pz};do
+          if [[ -n $(echo $scan | grep -E "$x") ]];then
           echo "------------------- p$x --------------------"
           smartctl -i -d sat+megaraid,$x /dev/sda | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:"
           echo ""
