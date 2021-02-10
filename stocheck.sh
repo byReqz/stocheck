@@ -13,6 +13,9 @@ while [ -z "$1" ]; do
   if [[ -z "$raidcheck" ]];then
     if [[ -n $(ls /sys/block | grep sd) ]];then
         echo "===  sata drive check: ==="
+        echo "-------------------------"
+        echo "$(ls -l /sys/block | grep sd | wc -l) Drives found"
+        echo "-------------------------"
         for x in {a..z};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
@@ -34,6 +37,9 @@ while [ -z "$1" ]; do
     fi
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ==="
+        echo "-------------------------"
+        echo "$(ls -l /dev | grep nvme | wc -l) Drives found"
+        echo "-------------------------"
         for x in {0..4};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
