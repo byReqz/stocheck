@@ -45,3 +45,33 @@ chmod +x stockheck.sh && ./stocheck.sh
 ```bash
 alias stocheck="~/stocheck.sh"
 ```
+
+# sample output
+```bash
+===  sata drive check: ===
+-------------------------
+1 Drives found
+-------------------------
+------------------- /dev/sda --------------------
+=== START OF INFORMATION SECTION ===
+Device Model:     INTEL XXXXXX
+Serial Number:    XXXXXXXXXXXX
+Firmware Version: LT2i
+User Capacity:    240.057.409.536 bytes [240 GB]
+Sector Size:      512 bytes logical/physical
+Rotation Rate:    Solid State Device
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF SELF-ASSESSMENT TEST RESULT ===
+SMART overall-health self-assessment test result: PASSED
+
+=== START OF READ SMART DATA SECTION ===
+  5 Reallocated_Sector_Ct   0x0032   100   100   000    Old_age   Always       -       0
+  9 Power_On_Hours          0x0032   100   100   000    Old_age   Always       -       1922
+ 12 Power_Cycle_Count       0x0032   100   100   000    Old_age   Always       -       2115
+187 Reported_Uncorrect      0x0032   100   100   000    Old_age   Always       -       1
+194 Temperature_Celsius     0x0032   033   100   000    Old_age   Always       -       33 (Min/Max -20/75)
+233 Media_Wearout_Indicator 0x0032   081   100   000    Old_age   Always       -       0
+-------------------------------------------------
+```
