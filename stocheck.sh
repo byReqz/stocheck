@@ -38,7 +38,7 @@ while [ -z "$1" ]; do
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ==="
         echo "-------------------------"
-        echo "$(ls -l /dev | grep nvme | wc -l) Drives found"
+        echo "$(ls -l /sys/block | grep nvme | wc -l) Drives found"
         echo "-------------------------"
         for x in {0..4};do
           scan=$(smartctl --scan)
@@ -57,7 +57,7 @@ while [ -z "$1" ]; do
           exit
         fi
     fi
-    if [[ -n $(ls /dev | grep nvme) ]] || [[ -n $(ls /sys/block | grep sd) ]] || [[ ! "$raidcheck" =~ "3ware" ]] && [[ "$raidcheck" =~ "adaptec" ]] && [[ "$raidcheck" =~ "lsi" ]] && [[ -n $(ls /sys/block | grep sd) ]] && [[ -n $(ls /dev | grep nvme) ]];then
+    if [[ -n $(ls /sys/block | grep nvme) ]] || [[ -n $(ls /sys/block | grep sd) ]] || [[ ! "$raidcheck" =~ "3ware" ]] && [[ "$raidcheck" =~ "adaptec" ]] && [[ "$raidcheck" =~ "lsi" ]] && [[ -n $(ls /sys/block | grep sd) ]] && [[ -n $(ls /dev | grep nvme) ]];then
         echo "no drives detected"
         exit
     fi
