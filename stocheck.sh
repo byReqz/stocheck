@@ -8,14 +8,21 @@ if [[ ! "$0" =~ "bash" ]];then
     echo ""
   fi
 fi
+if [[ $(whoami) != "root" ]];then
+  echo "-----------------------------------------"
+  echo "ERROR: This script should be run as root."
+  echo "-----------------------------------------"
+  exit
+fi
 while [ -z "$1" ]; do
   raidcheck="$(lspci | grep -E 'LSI|3Ware|Adaptec|Smartraid')"
   if [[ -z "$raidcheck" ]];then
+  echo "-------------------------------------------- Device Map --------------------------------------------"
+  lsblk -f
+  echo "----------------------------------------------------------------------------------------------------"
+  echo ""
     if [[ -n $(ls /sys/block | grep sd) ]];then
-        echo "===  sata drive check: ==="
-        echo "-------------------------"
-        echo "$(ls -l /sys/block | grep sd | wc -l) Drives found"
-        echo "-------------------------"
+        echo "===  sata drive check: ($(ls -l /sys/block | grep sd | wc -l) found) ==="
         for x in {a..z};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
@@ -36,10 +43,7 @@ while [ -z "$1" ]; do
         fi
     fi
     if [[ -n $(ls /dev | grep nvme) ]];then
-        echo "===  nvme drive check: ==="
-        echo "-------------------------"
-        echo "$(ls -l /sys/block | grep nvme | wc -l) Drives found"
-        echo "-------------------------"
+        echo "===  nvme drive check: ($(ls -l /sys/block | grep nvme | wc -l) found) ==="
         for x in {0..4};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
