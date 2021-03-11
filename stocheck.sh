@@ -8,7 +8,7 @@ if [[ ! "$0" =~ "bash" ]];then
     echo ""
   fi
 fi
-if [[ $(whoami) != "root" ]];then
+if [[ $(whoami) != "root" ]] && [[ "$1" != "-u" ]];then
   echo "-----------------------------------------"
   echo "ERROR: This script should be run as root."
   echo "-----------------------------------------"
