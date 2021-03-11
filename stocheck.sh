@@ -17,10 +17,56 @@ fi
 while [ -z "$1" ]; do
   raidcheck="$(lspci | grep -E 'LSI|3Ware|Adaptec|Smartraid')"
   if [[ -z "$raidcheck" ]];then
-  echo "-------------------------------------------- Device Map --------------------------------------------"
-  lsblk -f
-  echo "----------------------------------------------------------------------------------------------------"
-  echo ""
+    if [[ -n $(ls /proc | grep -e "mdstat") ]];then
+      raidlist=$(grep -e "md" /proc/mdstat | cut -d " " -f 1)
+      raidlist2=$(echo "$raidlist" | wc -l)
+      df=$(df -Th)
+      lsbl=$(lsblk -f)
+      if [[ "$raidlist2" == "1" ]];then
+        echo -e "detected "$raidlist2" raid array"
+      else
+        echo -e "detected "$raidlist2" raid arrays"
+      fi
+      echo -e "--------------------------------------------------"
+      for ((x=1;x<=raidlist2;x++)); do
+          raid=$(echo "$raidlist" | sed -n "$x"p)
+          if [[ "$df" =~ "$raid" ]];then
+              raidts=$(df -Th | grep "$raid" | tr -s ' ' | cut -d " " -f 3)
+          else
+              raidts="unmounted"
+          fi
+          if [[ "$raidts" == "unmounted" ]];then
+              raidfs=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 2,3)
+              raidper="NaN"
+              raidmp="NaN"
+              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
+              raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
+              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]" -E "nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
+              echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mState:\033[0m "$raidts" \033[1mSize/%/Mountpoint/UUID:\033[0m "NaN""
+              echo -e "\033[1mMembers:\033[0m "$raiddrives""
+              echo -e ""
+          else
+              raidfs=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 2,3)
+              raidper=$(echo "$lsblk" | grep "$raid" | tr -s ' ' | cut -d " " -f 6)
+              raidmp=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 7)
+              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
+              raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
+              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]" -E "nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
+              echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mState:\033[0m "mounted" \033[1mSize:\033[0m "$raidts" \033[1m%:\033[0m "$raidper" \033[1mFilesystem:\033[0m "$raidfs" \033[1mMountpoint:\033[0m "$raidmp" \033[1mP-UUID\033[0m "$raiduuid""
+              echo -e "\033[1mMembers:\033[0m "$raiddrives""
+              echo ""
+          fi
+      done
+      if [[ "$mdadmconf" =~ "recovery" ]];then
+          echo -e "\033[1mWarning:\033[0m one or more arrays are rebuilding right now"
+          echo ""
+      elif [[ "$mdadmconf" =~ "resync" ]];then
+          echo -e "\033[1mWarning:\033[0m one or more arrays are resyncing right now"
+          echo ""
+      fi
+      echo -e "--------------------------------------------------"
+      echo ""
+    fi
     if [[ -n $(ls /sys/block | grep sd) ]];then
         echo "===  sata drive check: ($(ls -l /sys/block | grep sd | wc -l) found) ==="
         for x in {a..z};do
