@@ -41,7 +41,7 @@ while [ -z "$1" ]; do
               raidmp="NaN"
               raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
               raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
-              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]" -E "nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
+              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]|nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
               echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mState:\033[0m "$raidts" \033[1mSize/%/Mountpoint/UUID:\033[0m "NaN""
               echo -e "\033[1mMembers:\033[0m "$raiddrives""
               echo -e ""
@@ -51,7 +51,7 @@ while [ -z "$1" ]; do
               raidmp=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 7)
               raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
               raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
-              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]" -E "nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
+              raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]|nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
               echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mState:\033[0m "mounted" \033[1mSize:\033[0m "$raidts" \033[1m%:\033[0m "$raidper" \033[1mFilesystem:\033[0m "$raidfs" \033[1mMountpoint:\033[0m "$raidmp" \033[1mP-UUID\033[0m "$raiduuid""
               echo -e "\033[1mMembers:\033[0m "$raiddrives""
               echo ""
