@@ -15,7 +15,7 @@ if [[ $(whoami) != "root" ]] && [[ "$1" != "-u" ]];then
   exit
 fi
 while [ -z "$1" ]; do
-  raidcheck="$(lspci | grep -E 'LSI|3Ware|Adaptec|Smartraid')"
+  raidcheck="$(lspci | grep -E 'LSI|3ware|Adaptec|Smartraid')"
   if [[ -z "$raidcheck" ]];then
     if [[ -n $(ls /proc | grep -e "mdstat") ]];then
       raidlist=$(grep -e "md" /proc/mdstat | cut -d " " -f 1)
@@ -111,7 +111,7 @@ while [ -z "$1" ]; do
         echo "no drives detected"
         exit
     fi
-  elif [[ -n $(echo "$raidcheck" | grep -e "3Ware") ]];then
+  elif [[ -n $(echo "$raidcheck" | grep -e "3ware") ]];then
     echo "3ware raid-controller detected"
     dreiware=$(tw_cli show | grep c | cut -c -3)
     echo "------------------- 3ware controller: $dreiware --------------------"
