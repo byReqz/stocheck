@@ -17,7 +17,7 @@ fi
 while [ -z "$1" ]; do
   raidcheck="$(lspci | grep -E 'LSI|3ware|Adaptec|Smartraid')"
   if [[ -z "$raidcheck" ]];then
-    if [[ -n $(ls /proc | grep -e "mdstat") ]];then
+    if [[ -n $(ls /proc | grep -e "mdstat") ]] && [[ -n $(grep -e "md" /proc/mdstat) ]];then
       raidlist=$(grep -e "md" /proc/mdstat | cut -d " " -f 1)
       raidlist2=$(echo "$raidlist" | wc -l)
       df=$(df -Th)
