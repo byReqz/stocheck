@@ -74,10 +74,12 @@ while [ -z "$1" ]; do
           if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
             argsl=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
             argse=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-            argsl="
-            $argsl
-            $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-            "
+            if [[ "$argse" =~ "FAILING_NOW" ]];then
+              argsl="
+              "$argsl"
+              "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+              "
+            fi
             argsm=$(echo "$argsl" | wc -l)
             echo "------------------- /dev/sd$x --------------------"
             smartctl -i /dev/sd$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
@@ -113,10 +115,12 @@ while [ -z "$1" ]; do
           if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
           argsl=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
           argse=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-          argsl="
-          $argsl
-          $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-          "
+          if [[ "$argse" =~ "FAILING_NOW" ]];then
+            argsl="
+            "$argsl"
+            "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+            "
+          fi
           argsm=$(echo "$argsl" | wc -l)
           echo "------------------- /dev/nvme$x --------------------"
             smartctl -i /dev/nvme$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate"  -e "Model Number:" -e "Total NVM Capacity:" -e "Namespace 1 Utilization"
@@ -163,10 +167,12 @@ while [ -z "$1" ]; do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             argsl=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
             argse=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-            argsl="
-            $argsl
-            $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-            "
+            if [[ "$argse" =~ "FAILING_NOW" ]];then
+              argsl="
+              "$argsl"
+              "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+              "
+            fi
             argsm=$(echo "$argsl" | wc -l)
             echo "------------------- p$x --------------------"
             smartctl -i -d 3ware,p$x /dev/twe0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
@@ -200,10 +206,12 @@ while [ -z "$1" ]; do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             argsl=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
             argse=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-            argsl="
-            $argsl
-            $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-            "
+            if [[ "$argse" =~ "FAILING_NOW" ]];then
+              argsl="
+              "$argsl"
+              "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+              "
+            fi
             argsm=$(echo "$argsl" | wc -l)
             echo "------------------- p$x --------------------"
             smartctl -i -d 3ware,p$x /dev/twa0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
@@ -237,10 +245,12 @@ while [ -z "$1" ]; do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
             argsl=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
             argse=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-            argsl="
-            $argsl
-            $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-            "
+            if [[ "$argse" =~ "FAILING_NOW" ]];then
+              argsl="
+              "$argsl"
+              "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+              "
+            fi
             argsm=$(echo "$argsl" | wc -l)
             echo "------------------- p$x --------------------"
             smartctl -i -d 3ware,p$x /dev/twl0 | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
@@ -285,10 +295,12 @@ while [ -z "$1" ]; do
         if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
           argsl=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
           argse=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-          argsl="
-          $argsl
-          $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-          "
+          if [[ "$argse" =~ "FAILING_NOW" ]];then
+            argsl="
+            "$argsl"
+            "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+            "
+          fi
           argsm=$(echo "$argsl" | wc -l)
           echo "------------------- sg$x --------------------"
           smartctl -i -d sat /dev/sg$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
@@ -335,10 +347,12 @@ while [ -z "$1" ]; do
             if [[ -n $(echo $scan | grep -E "$x") ]];then
             argsl=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
             argse=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
-            argsl="
-            $argsl
-            $(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)
-            "
+            if [[ "$argse" =~ "FAILING_NOW" ]];then
+              argsl="
+              "$argsl"
+              "$(echo $argse | grep -e "FAILING_NOW" | tr -s ' ' | cut -c 2- | cut -d ' ' -f 2)"
+              "
+            fi
             argsm=$(echo "$argsl" | wc -l)
             echo "------------------- p$x --------------------"
             smartctl -i -d sat+megaraid,$x /dev/sda | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
