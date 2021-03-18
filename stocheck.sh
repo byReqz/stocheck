@@ -71,9 +71,9 @@ while [ -z "$1" ]; do
         echo "===  sata drive check: ($(ls -l /sys/block | grep sd | wc -l) found) ==="
         for x in {a..z};do
           scan=$(smartctl --scan)
-          if [[ -n $(echo $scan | grep /dev/sd$x) ]];then
-            argsl=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-            argse=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+          if [[ -n $(echo $scan | grep /dev/sd$x) ]] && [[ -n $(ls /sys/block | grep sd"$x") ]];then
+            argsl=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+            argse=$(smartctl -A /dev/sd$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -e "FAILING_NOW" --color=never)
             if [[ "$argse" =~ "FAILING_NOW" ]];then
               argsl="
               "$argsl"
@@ -81,7 +81,7 @@ while [ -z "$1" ]; do
               "
             fi
             argsm=$(echo "$argsl" | wc -l)
-            echo "------------------- /dev/sd$x --------------------"
+            echo "------------------- /dev/sd"$x" --------------------"
             smartctl -i /dev/sd$x | grep -e "=== START OF INFORMATION SECTION ===" -e "Device Model:" -e "Serial Number:" -e "Firmware Version:" -e "User Capacity:" -e "SMART support is:" -e "Sector Size:" -e "Rotation Rate:" -e "Multi_Zone_Error_Rate" 
             echo ""
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
@@ -97,8 +97,12 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
+            echo "-------------------------------------------------"
+          elif [[ -z $(echo $scan | grep /dev/sd"$x") ]] && [[ -n $(ls /sys/block | grep sd"$x") ]];then
+            echo "------------------- /dev/sd"$x" --------------------"
+            echo -e "drive is not responding"
             echo "-------------------------------------------------"
           else
             exit
@@ -112,9 +116,9 @@ while [ -z "$1" ]; do
         echo "===  nvme drive check: ($(ls -l /sys/block | grep nvme | wc -l) found) ==="
         for x in {0..4};do
           scan=$(smartctl --scan)
-          if [[ -n $(echo $scan | grep /dev/nvme$x) ]];then
-          argsl=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-          argse=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+          if [[ -n $(echo $scan | grep /dev/nvme$x) ]] && [[ -n $(ls /sys/block | grep nvme"$x") ]];then
+          argsl=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+          argse=$(smartctl -A /dev/nvme$x | grep -e "=== START OF READ SMART DATA SECTION ===" -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" --color=never)
           if [[ "$argse" =~ "FAILING_NOW" ]];then
             argsl="
             "$argsl"
@@ -138,9 +142,13 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
           echo "---------------------------------------------------"
+          elif [[ -z $(echo $scan | grep /dev/nvme"$x") ]] && [[ -n $(ls /sys/block | grep nvme"$x") ]];then
+            echo "------------------- /dev/nvme"$x" --------------------"
+            echo -e "drive is not responding"
+            echo "-------------------------------------------------"
           fi
         done
         if [[ -z $(ls /dev | grep sd) ]];then
@@ -165,8 +173,8 @@ while [ -z "$1" ]; do
         echo "===  sata drive check: ==="
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
-            argsl=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-            argse=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+            argsl=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+            argse=$(smartctl -A -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" --color=never)
             if [[ "$argse" =~ "FAILING_NOW" ]];then
               argsl="
               "$argsl"
@@ -190,10 +198,9 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
             echo "-------------------------------------------"
-          else
             exit
           fi
         done
@@ -204,8 +211,8 @@ while [ -z "$1" ]; do
         echo "===  sata drive check: ==="
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
-            argsl=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-            argse=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+            argsl=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+            argse=$(smartctl -A -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" --color=never)
             if [[ "$argse" =~ "FAILING_NOW" ]];then
               argsl="
               "$argsl"
@@ -229,7 +236,7 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
             echo "-------------------------------------------"
           else
@@ -243,8 +250,8 @@ while [ -z "$1" ]; do
         echo "===  sata drive check: ==="
         for x in {0..20};do
           if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
-            argsl=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-            argse=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+            argsl=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+            argse=$(smartctl -A -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -e "FAILING_NOW" --color=never)
             if [[ "$argse" =~ "FAILING_NOW" ]];then
               argsl="
               "$argsl"
@@ -268,7 +275,7 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
             echo "-------------------------------------------"
           else
@@ -293,8 +300,8 @@ while [ -z "$1" ]; do
     if [[ $yn == "y" ]] || [[ $yn == "Y" ]] || [[ $yn == "yes" ]];then
       for x in {1..20};do
         if [[ -n $(echo $dreiwaredrives | grep p$x) ]];then
-          argsl=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-          argse=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+          argsl=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+          argse=$(smartctl -A -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" --color=never)
           if [[ "$argse" =~ "FAILING_NOW" ]];then
             argsl="
             "$argsl"
@@ -318,7 +325,7 @@ while [ -z "$1" ]; do
             updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
             failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
             raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-            printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+            printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
           done
           echo "-------------------------------------------"
         else
@@ -344,9 +351,9 @@ while [ -z "$1" ]; do
       p1=$(head -n 1 $scan | cut -c 12-)
       pz=$(tail -n 1 $scan | cut -c 12-)
         for x in {$p1..$pz};do
-            if [[ -n $(echo $scan | grep -E "$x") ]];then
-            argsl=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -o --color=never)
-            argse=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" --color=never)
+            if [[ -n $(echo $scan | grep -E "$x") ]] && [[ -n $(ls /sys/block | grep "$x") ]];then
+            argsl=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -o --color=never)
+            argse=$(smartctl -A -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:" -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Error Information" -e "No Errors Logged" -e "FAILING_NOW" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" --color=never)
             if [[ "$argse" =~ "FAILING_NOW" ]];then
               argsl="
               "$argsl"
@@ -370,7 +377,7 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "%-14s %s " "     $thresh" "$type" && printf "%-10s %s " "  $updated" "$failed" && printf "\n"
+              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
             done
             echo "-------------------------------------------------"
             else
