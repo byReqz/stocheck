@@ -87,7 +87,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/sd$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -97,8 +97,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
             echo "-------------------------------------------------"
           elif [[ -z $(echo $scan | grep /dev/sd"$x") ]] && [[ -n $(ls /sys/block | grep sd"$x") ]];then
             echo "------------------- /dev/sd"$x" --------------------"
@@ -132,7 +134,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/nvme$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -142,8 +144,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
           echo "---------------------------------------------------"
           elif [[ -z $(echo $scan | grep /dev/nvme"$x") ]] && [[ -n $(ls /sys/block | grep nvme"$x") ]];then
             echo "------------------- /dev/nvme"$x" --------------------"
@@ -188,7 +192,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H -d 3ware,p$x /dev/twe0 | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -198,8 +202,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
             echo "-------------------------------------------"
             exit
           fi
@@ -226,7 +232,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H -d 3ware,p$x /dev/twa0 | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -236,8 +242,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
             echo "-------------------------------------------"
           else
             exit
@@ -265,7 +273,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H -d 3ware,p$x /dev/twl0 | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -275,8 +283,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
             echo "-------------------------------------------"
           else
             exit
@@ -315,7 +325,7 @@ while [ -z "$1" ]; do
           echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
           smartctl -H -d sat /dev/sg$x | grep -e "SMART overall-health self-assessment test result:"
           echo ""
-          echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+          argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
           for ((z=1;z<=argsm;z++)); do
             arg=$(echo "$argsl" | sed -n "$z"p)
             value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -325,8 +335,10 @@ while [ -z "$1" ]; do
             updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
             failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
             raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-            printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+            argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
           done
+          echo "$(echo "$argend" | column -t -s "|")"
           echo "-------------------------------------------"
         else
             exit
@@ -367,7 +379,7 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H -d sat+megaraid,$x /dev/sda | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            echo -e "\e[4mAttribute\e[0m                 \e[4mValue (Raw)\e[0m    \e[4mWorst\e[0m    \e[4mThresh\e[0m    \e[4mType\e[0m      \e[4mUpdated\e[0m  \e[4mFailed\e[0m"
+            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue (Raw)\e[0m|\e[4mWorst\e[0m|\e[4mThresh\e[0m|\e[4mType\e[0m|\e[4mUpdated\e[0m|\e[4mFailed\e[0m")
             for ((z=1;z<=argsm;z++)); do
               arg=$(echo "$argsl" | sed -n "$z"p)
               value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 4)
@@ -377,8 +389,10 @@ while [ -z "$1" ]; do
               updated=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 8)
               failed=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 9)
               raw=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ' ' -f 10)
-              printf "%-25s %s " "$arg" "$value" && printf "%-10s %s " "($raw)" "$worst" && printf "     $thresh" && printf "%-16s %s "  "       $type" "$updated" && printf "  $failed" && printf "\n"
+              argend=""$argend"
+"$(echo ""$arg"|"$value" ("$raw")|"$worst"|"$thresh"|"$type"|"$updated"|"$failed"")""
             done
+            echo "$(echo "$argend" | column -t -s "|")"
             echo "-------------------------------------------------"
             else
               exit
