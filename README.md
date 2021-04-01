@@ -20,14 +20,21 @@ Options: <br>
  -u/--update -- update the script <br>
 
 ### **running it on a remote machine:**
-**running once:**
+**running from the local file (can be automated with cron):**
 ```bash
 ssh root@remote 'bash -s' < stocheck.sh
 ```
 
+or
+
+**running directly from github**
+```bash
+ssh root@remote "curl -s "https://raw.githubusercontent.com/byReqz/stocheck/main/stocheck.sh" | bash"
+```
+
 **proper alias:**
 ```bash
-echo "function stocheck_remote { ssh root@"$"1 'bash -s' < ~/stocheck.sh; }" >> ~/.bashrc
+echo "function stocheck_remote { ssh root@'$'1 'bash -s' < ~/stocheck.sh; }" >> ~/.bashrc
 echo "alias stocheck=stocheck_remote" >> ~/.bashrc
 ```
 
