@@ -20,5 +20,5 @@ jobs:
           author_name: actions
           author_email: nils@byreqz.de
           message: 'updated hash after commit'
-          add: 'hash'
+          add: 'hash --force'
     
