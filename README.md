@@ -10,6 +10,10 @@ supports most common raid-controller brands (but not all models): <br>
 - adaptec (smartraid/aacraid not yet implemented) <br>
 - lsi/dell <br>
 
+### known issues:
+- showing all attributes for raid controllers fails via SSH
+- Dell/LSI controllers in IT/HBA mode fail
+
 # contributing
 As different drives have different arguments, there are always ones which im gonna miss out on. Please submit smart arguments that you think to be missing as issue or merge request.
 
