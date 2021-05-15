@@ -129,10 +129,10 @@ while [ -z "$1" ]; do
             echo "=== START OF SELF-ASSESSMENT TEST RESULT ==="
             smartctl -H /dev/nvme$x | grep -e "SMART overall-health self-assessment test result:"
             echo ""
-            argend=$(echo -e "\e[4mAttribute\e[0m|\e[4mValue\e[0m")
+            argend="$(echo -e "\e[4mAttribute\e[0m|\e[4mValue\e[0m")"
             for ((z=1;z<=argsm;z++)); do
-              arg=$(echo "$argsl" | sed -n "$z"p)
-              value=$(echo "$argse" | grep -e "$arg" | xargs | cut -d ':' -f 2,3 | cut -c 2-)
+              arg="$(echo "$argsl" | sed -n "$z"p)"
+              value="$(echo "$argse" | grep -e "$arg" | xargs | cut -d ':' -f 2,3 | cut -c 2-)"
               argend=""$argend""
             done
             echo "$(echo "$argend" | column -t -s "|")"
