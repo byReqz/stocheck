@@ -106,13 +106,8 @@ while [ -z "$1" ]; do
             echo "------------------- /dev/sd"$x" --------------------"
             echo -e "drive is not responding"
             echo "-------------------------------------------------"
-          else
-            exit
           fi
         done
-        if [[ -z $(ls /dev | grep nvme) ]];then
-          exit
-        fi
     fi
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ($(ls -l /sys/block | grep nvme | wc -l) found) ==="
@@ -150,14 +145,12 @@ while [ -z "$1" ]; do
             echo "-------------------------------------------------"
           fi
         done
-        if [[ -z $(ls /dev | grep sd) ]];then
-          exit
-        fi
     fi
     if [[ -n $(ls /sys/block | grep nvme) ]] || [[ -n $(ls /sys/block | grep sd) ]] || [[ ! "$raidcheck" =~ "3ware" ]] && [[ "$raidcheck" =~ "adaptec" ]] && [[ "$raidcheck" =~ "lsi" ]] && [[ -n $(ls /sys/block | grep sd) ]] && [[ -n $(ls /dev | grep nvme) ]];then
         echo "no drives detected"
         exit
     fi
+    exit
   elif [[ -n $(echo "$raidcheck" | grep -e "3ware") ]];then
     echo "3ware raid-controller detected"
     dreiware=$(tw_cli show | grep c | cut -c -3)
