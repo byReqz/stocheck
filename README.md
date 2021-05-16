@@ -13,6 +13,7 @@ supports most common raid-controller brands (but not all models): <br>
 ### known issues:
 - showing all attributes for raid controllers fails via SSH
 - Dell/LSI controllers in IT/HBA mode fail
+- smart arguments for some NVMe drives missing
 
 # contributing
 As different drives have different arguments, there are always ones which im gonna miss out on. Please submit smart arguments that you think to be missing as issue or merge request.
@@ -62,15 +63,12 @@ alias stocheck="~/stocheck.sh"
 
 # sample output
 ```bash
-===  sata drive check: ===
--------------------------
-1 Drives found
--------------------------
+===  sata drive check: (1 found) ===
 ------------------- /dev/sda --------------------
 === START OF INFORMATION SECTION ===
-Device Model:     INTEL XXXXXX
-Serial Number:    XXXXXXXXXXXX
-Firmware Version: LT2i
+Device Model:     INTEL XXXXXXXX
+Serial Number:    XXXXXXXXXXXXX
+Firmware Version: XXXX
 User Capacity:    240.057.409.536 bytes [240 GB]
 Sector Size:      512 bytes logical/physical
 Rotation Rate:    Solid State Device
@@ -80,12 +78,12 @@ SMART support is: Enabled
 === START OF SELF-ASSESSMENT TEST RESULT ===
 SMART overall-health self-assessment test result: PASSED
 
-=== START OF READ SMART DATA SECTION ===
-  5 Reallocated_Sector_Ct   0x0032   100   100   000    Old_age   Always       -       0
-  9 Power_On_Hours          0x0032   100   100   000    Old_age   Always       -       1922
- 12 Power_Cycle_Count       0x0032   100   100   000    Old_age   Always       -       2115
-187 Reported_Uncorrect      0x0032   100   100   000    Old_age   Always       -       1
-194 Temperature_Celsius     0x0032   033   100   000    Old_age   Always       -       33 (Min/Max -20/75)
-233 Media_Wearout_Indicator 0x0032   081   100   000    Old_age   Always       -       0
+Attribute                Value (Raw)  Worst  Thresh  Type     Updated  Failed
+Reallocated_Sector_Ct    100 (0)      100    000     Old_age  Always   -
+Power_On_Hours           100 (1991)   100    000     Old_age  Always   -
+Power_Cycle_Count        100 (2332)   100    000     Old_age  Always   -
+Reported_Uncorrect       100 (1)      100    000     Old_age  Always   -
+Temperature_Celsius      026 (26)     100    000     Old_age  Always   -
+Media_Wearout_Indicator  080 (0)      100    000     Old_age  Always   -
 -------------------------------------------------
 ```
