@@ -133,7 +133,8 @@ while [ -z "$1" ]; do
             for ((z=1;z<=argsm;z++)); do
               arg="$(echo "$argsl" | sed -n "$z"p)"
               value="$(echo "$argse" | grep -e "$arg" | xargs | cut -d ':' -f 2- | cut -c 2-)"
-              argend=""$argend""
+              argend=""$argend"
+"$arg"|"$value""
             done
             echo "$(echo "$argend" | column -t -s "|")"
             echo ""
