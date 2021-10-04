@@ -36,7 +36,7 @@ while [ -z "$1" ]; do
           fi
           if [[ "$raidts" == "unmounted" ]];then
               raidfs=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 3)
-              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
+              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 5)
               raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
               raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]|nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
               echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mFS:\033[0m "$raidfs""
@@ -47,7 +47,7 @@ while [ -z "$1" ]; do
               raidfs=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 3)
               raidper=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 6)
               raidmp=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 7)
-              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 4)
+              raiduuid=$(echo "$lsbl" | grep "$raid" | tr -s ' ' | cut -d " " -f 5)
               raidstate=$(echo "$mdadmconf" | grep -e "$raid" | cut -d " " -f 4)
               raiddrives=$(echo "$mdadmconf" | grep -e "$raid" | cut -c 6- | grep -o -E "sd[a-z][0-9]|nvme[0-9]n[0-9]p[0-9]" | tr "\n" " ")
               echo -e "\033[1mArray:\033[0m "$raid" \033[1mType:\033[0m "$raidstate" \033[1mSize:\033[0m "$raidts" \033[1m%:\033[0m "$raidper""
