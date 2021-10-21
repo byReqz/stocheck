@@ -109,7 +109,7 @@ while [ -z "$1" ]; do
     fi
     if [[ -n $(ls /dev | grep nvme) ]];then
         echo "===  nvme drive check: ($(ls -l /sys/block | grep nvme | wc -l) found) ==="
-        for x in {0..4};do
+        for x in {0..24};do
           scan=$(smartctl --scan)
           if [[ -n $(echo $scan | grep /dev/nvme$x) ]] && [[ -n $(ls /sys/block | grep nvme"$x") ]];then
           argsl=$(smartctl -a /dev/nvme$x | grep -e "Reallocated_Sector_Ct" -e "Power_On_Hours" -e "Temperature_Celsius" -e "Media_Wearout_Indicator" -e "Power_Cycle_Count" -e "Reported_Uncorrect" -e "Temperature:" -e "Percentage Used:" -e "Data Units Read:" -e "Data Units Written:" -e "Power on Hours:" -e "Power Cycles:" -e "Media and Data Integrity Errors:" -e "Error Information Log Entries:" -e "Percent_Lifetime_Remain" -e "Write_Error_Rate" -e "Offline_Uncorrectable" -e "Reported_Uncorrect" -e "Error_Correction_Count" -e "Unexpect_Power_Loss_Ct" -e "Raw_Read_Error_Rate" -e "Warning Comp. Temperature Time" -e "Critical Comp. Temperature Time" -e "Power On Hours" -e "Controller Busy Time" -e "Temperature Sensor 1" -e "Temperature Sensor 2" -e "Wear_Leveling_Count" -e "Available Spare:" -e "Critical Warning:" -e "Available Spare Threshold:" -o --color=never)
